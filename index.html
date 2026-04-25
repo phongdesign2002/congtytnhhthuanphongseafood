@@ -319,7 +319,37 @@
             localStorage.setItem('siteBackgroundImage', url);
         }; input.click();
     }
+// --- 6. LIÊN KẾT GOOGLE SHEETS (KHÔI PHỤC TẠI ĐÂY) ---
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault(); 
+        const btn = document.getElementById('submit-btn');
+        btn.innerText = "ĐANG GỬI..."; btn.disabled = true;
 
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwLh4Ei3e8lDoXxdiM4QoYtN04OEAupsTwxkKhpJa8RBkf8Fzfns6SJ0zgei_LQUhbXXQ/exec'; 
+        
+        fetch(scriptURL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify({
+                user_name: document.getElementById('from_name').value, 
+                user_phone: document.getElementById('user_phone').value, 
+                message: document.getElementById('message').value
+            })
+        }).then(() => {
+            btn.innerText = "GỬI THÀNH CÔNG!"; 
+            btn.style.backgroundColor = "#22c55e"; 
+            document.getElementById('contact-form').reset();
+            setTimeout(() => { 
+                btn.innerText = "GỬI YÊU CẦU NGAY"; 
+                btn.disabled = false; 
+                btn.style.backgroundColor = ""; 
+            }, 3000);
+        }).catch(err => {
+            alert("Lỗi gửi Form!");
+            btn.disabled = false;
+        });
+    });
+    
     function initBackground() {
         const savedBg = localStorage.getItem('siteBackgroundImage');
         document.getElementById('main-bg-img').src = savedBg || "https://images.unsplash.com/photo-1551244072-5d12893278ab?auto=format&fit=crop&q=80";
