@@ -283,8 +283,8 @@ function toggleAdmin() {
     }
 
     // Xóa bỏ email và pass ghi sẵn, thay bằng lời mời nhập
-    const email = prompt("nhn.phong.202@gmail.com"); 
-    const pass = prompt("phong0333422675");
+  const email = prompt("NHẬP EMAIL QUẢN TRỊ:");
+const pass = prompt("NHẬP MẬT KHẨU:");
 
     if (email && pass) {
         auth.signInWithEmailAndPassword(email, pass)
