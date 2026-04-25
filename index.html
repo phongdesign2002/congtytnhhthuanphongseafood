@@ -269,17 +269,38 @@
         `).join('') + (isAdmin ? `<button onclick="addItem('news')" class="border-2 border-dashed border-white/10 p-10 text-cyan-400 font-900 text-xs">+ THÊM</button>` : '');
     }
 
-    // 6. ADMIN & BG
+    // HÀM ĐĂNG NHẬP THẬT VÀO FIREBASE
     function toggleAdmin() {
-        if (isAdmin) { isAdmin = false; renderAll(); return; }
-        const pass = prompt("ADMIN PASS:");
-        if (pass === "phong0333422675") { 
-            isAdmin = true; renderAll(); 
-            document.getElementById('save-btn').classList.remove('hidden'); 
-            document.getElementById('bg-upload-btn').classList.remove('hidden');
+        if (isAdmin) { 
+            auth.signOut().then(() => {
+                isAdmin = false; 
+                renderAll(); 
+                document.getElementById('save-btn').classList.add('hidden');
+                document.getElementById('bg-upload-btn').classList.add('hidden');
+                alert("ĐÃ ĐĂNG XUẤT!");
+            });
+            return; 
+        }
+
+        const email = prompt("NHẬP EMAIL ADMIN:");
+        const pass = prompt("NHẬP MẬT KHẨU ADMIN:");
+
+        if (email && pass) {
+            // Lệnh đăng nhập chính thức vào Firebase
+            auth.signInWithEmailAndPassword(email, pass)
+                .then((userCredential) => {
+                    isAdmin = true; 
+                    renderAll(); 
+                    document.getElementById('save-btn').classList.remove('hidden'); 
+                    document.getElementById('bg-upload-btn').classList.remove('hidden');
+                    alert("CHÀO ADMIN PHONG! QUYỀN GHI ĐÃ ĐƯỢC KÍCH HOẠT.");
+                })
+                .catch((error) => {
+                    alert("SAI THÔNG TIN ĐĂNG NHẬP HOẶC TÀI KHOẢN KHÔNG TỒN TẠI!");
+                    console.error("Lỗi đăng nhập:", error.message);
+                });
         }
     }
-
     async function triggerUpload(cat, idx) {
         if (!isAdmin) return;
         const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
