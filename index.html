@@ -319,7 +319,32 @@
             localStorage.setItem('siteBackgroundImage', url);
         }; input.click();
     }
-// --- 6. LIÊN KẾT GOOGLE SHEETS (KHÔI PHỤC TẠI ĐÂY) ---
+
+    function initBackground() {
+        const savedBg = localStorage.getItem('siteBackgroundImage');
+        document.getElementById('main-bg-img').src = savedBg || "https://images.unsplash.com/photo-1551244072-5d12893278ab?auto=format&fit=crop&q=80";
+    }
+
+    function updateData(cat, idx, key, val) { siteData[cat][idx][key] = val; }
+    function deleteItem(cat, idx) { if(confirm("XÓA?")) { siteData[cat].splice(idx, 1); renderAll(); } }
+    function addItem(cat) { 
+        const t = { products: {title:"TÊN MỚI", desc:"MÔ TẢ", tag:"TAG", img:""}, prices: {name:"HẢI SẢN MỚI", unit:"KG", price:"0đ", status:"Còn hàng"}, news: {title:"TIN MỚI", desc:"MÔ TẢ", tag:"NEW", img:"", fullText:""} };
+        siteData[cat].push(t[cat]); renderAll(); 
+    }
+    function openNewsReader(idx) {
+        currentReadingIndex = idx; const n = siteData.news[idx];
+        document.getElementById('reader-tag').innerText = n.tag;
+        document.getElementById('reader-title').innerText = n.title;
+        document.getElementById('reader-img').src = n.img || 'https://via.placeholder.com/800x500?text=News';
+        document.getElementById('reader-full-text').innerText = n.fullText || n.desc;
+        document.getElementById('reader-full-text').contentEditable = isAdmin;
+        document.getElementById('admin-article-tools').classList.toggle('hidden', !isAdmin);
+        document.getElementById('news-reader').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeNewsReader() { document.getElementById('news-reader').classList.add('hidden'); document.body.style.overflow = 'auto'; }
+    function saveFullArticle() { if(currentReadingIndex !== null) { siteData.news[currentReadingIndex].fullText = document.getElementById('reader-full-text').innerText; saveDataToCloud(); } }
+    // --- 6. LIÊN KẾT GOOGLE SHEETS (KHÔI PHỤC TẠI ĐÂY) ---
     document.getElementById('contact-form').addEventListener('submit', function(e) {
         e.preventDefault(); 
         const btn = document.getElementById('submit-btn');
@@ -349,31 +374,6 @@
             btn.disabled = false;
         });
     });
-    
-    function initBackground() {
-        const savedBg = localStorage.getItem('siteBackgroundImage');
-        document.getElementById('main-bg-img').src = savedBg || "https://images.unsplash.com/photo-1551244072-5d12893278ab?auto=format&fit=crop&q=80";
-    }
-
-    function updateData(cat, idx, key, val) { siteData[cat][idx][key] = val; }
-    function deleteItem(cat, idx) { if(confirm("XÓA?")) { siteData[cat].splice(idx, 1); renderAll(); } }
-    function addItem(cat) { 
-        const t = { products: {title:"TÊN MỚI", desc:"MÔ TẢ", tag:"TAG", img:""}, prices: {name:"HẢI SẢN MỚI", unit:"KG", price:"0đ", status:"Còn hàng"}, news: {title:"TIN MỚI", desc:"MÔ TẢ", tag:"NEW", img:"", fullText:""} };
-        siteData[cat].push(t[cat]); renderAll(); 
-    }
-    function openNewsReader(idx) {
-        currentReadingIndex = idx; const n = siteData.news[idx];
-        document.getElementById('reader-tag').innerText = n.tag;
-        document.getElementById('reader-title').innerText = n.title;
-        document.getElementById('reader-img').src = n.img || 'https://via.placeholder.com/800x500?text=News';
-        document.getElementById('reader-full-text').innerText = n.fullText || n.desc;
-        document.getElementById('reader-full-text').contentEditable = isAdmin;
-        document.getElementById('admin-article-tools').classList.toggle('hidden', !isAdmin);
-        document.getElementById('news-reader').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-    function closeNewsReader() { document.getElementById('news-reader').classList.add('hidden'); document.body.style.overflow = 'auto'; }
-    function saveFullArticle() { if(currentReadingIndex !== null) { siteData.news[currentReadingIndex].fullText = document.getElementById('reader-full-text').innerText; saveDataToCloud(); } }
 
     window.onload = () => { loadDataFromCloud(); initBackground(); };
 </script>
